@@ -25,8 +25,10 @@ func generateWithPipe(helpers test.Helpers, outputPath string, firstArgs, second
 
 	ctx := context.Background()
 
+	//nolint:gosec // this is a test helper
 	first := exec.CommandContext(ctx, ffmpegBinary, append([]string{"-y"}, firstArgs...)...)
 
+	//nolint:gosec // this is a test helper
 	second := exec.CommandContext(ctx, ffmpegBinary, append([]string{"-y", "-i", "-"}, secondArgs...)...)
 	second.Args = append(second.Args, outputPath)
 

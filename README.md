@@ -25,3 +25,26 @@ Note that Agar relies heavily on ffmpeg (of course.)
 
 TBD. Look at source.
 
+## Development & tests
+
+### Requirements
+
+* golang of course
+* make
+* ffmpeg and ffprob
+* sox
+* metaflac
+
+### Initial setup
+
+```bash
+make install-dev-tools
+```
+
+### Lifecycle
+
+```bash
+make lint
+make fix
+make test
+```

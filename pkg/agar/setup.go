@@ -1,4 +1,3 @@
-// Package testutil provides testing utilities for hypha integration tests using tigron.
 package agar
 
 import (
@@ -15,7 +14,7 @@ type agarSetup struct {
 }
 
 // CustomCommand returns a command configured with the hypha binary.
-func (hs *agarSetup) CustomCommand(_ *test.Case, testing tig.T) test.CustomizableCommand {
+func (hs *agarSetup) CustomCommand(_ *test.Case, _ tig.T) test.CustomizableCommand {
 	cmd := test.NewGenericCommand()
 	cmd.WithBinary(hs.binary)
 
