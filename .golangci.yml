@@ -263,11 +263,8 @@ linters:
           allow:
             - $gostd
             - github.com/farcloser/hypha
-            - github.com/farcloser/quark/pkg
-            - github.com/farcloser/quark/kit
             - github.com/urfave/cli/v3
             - golang.org/x/sync/errgroup
-            - github.com/dhowden/tag
             - github.com/containerd/nerdctl/mod/tigron
 
     gomoddirectives:

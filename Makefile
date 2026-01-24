@@ -1,13 +1,15 @@
-ORG_PREFIXES := "github.com/farcloser"
+NAME := agar
 ICON := "🧿"
+ORG := github.com/farcloser
 
 MAKEFILE_DIR := $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
 VERSION ?= $(shell git -C $(MAKEFILE_DIR) describe --match 'v[0-9]*' --dirty='.m' --always --tags 2>/dev/null \
 	|| echo "no_git_information")
 VERSION_TRIMMED := $(VERSION:v%=%)
-REVISION ?= $(shell git -C $(MAKEFILE_DIR) rev-parse HEAD 2>/dev/null || echo "no_git_information")$(shell \
+COMMIT ?= $(shell git -C $(MAKEFILE_DIR) rev-parse HEAD 2>/dev/null || echo "no_git_information")$(shell \
 	if ! git -C $(MAKEFILE_DIR) diff --no-ext-diff --quiet --exit-code 2>/dev/null; then echo .m; fi)
 LINT_COMMIT_RANGE ?= main..HEAD
+DATE = "$(shell date -u +%Y-%m-%dT%H:%M:%SZ)"
 
 ifdef VERBOSE
 	VERBOSE_FLAG := -v
@@ -42,7 +44,7 @@ help:
 	$(call footer, $@)
 
 # Tasks
-lint: lint-go-all lint-commits lint-mod lint-licenses-all lint-headers lint-yaml lint-shell ## Lint project
+lint: lint-go lint-commits lint-mod lint-licenses-all lint-headers lint-yaml lint-shell lint-go-all
 
 fix: fix-go-all fix-mod ## Automatically fix some issues
 
@@ -54,7 +56,7 @@ unit: test-unit test-unit-race test-unit-bench ## Run unit tests
 # Linting tasks
 ##########################
 lint-go:
-	$(call title, $@)
+	$(call title, $@ $(GOOS))
 	@cd $(MAKEFILE_DIR) \
 		&& golangci-lint run $(VERBOSE_FLAG_LONG) ./...
 	$(call footer, $@)
@@ -62,10 +64,10 @@ lint-go:
 lint-go-all:
 	$(call title, $@)
 	@cd $(MAKEFILE_DIR) \
-		&& GOOS=darwin make lint-go \
-		&& GOOS=linux make lint-go \
-		&& GOOS=freebsd make lint-go \
-		&& GOOS=windows make lint-go
+		&& GOOS=darwin $(MAKE) lint-go \
+		&& GOOS=linux $(MAKE) lint-go \
+		&& GOOS=freebsd $(MAKE) lint-go \
+		&& GOOS=windows $(MAKE) lint-go
 	$(call footer, $@)
 
 lint-yaml:
@@ -74,9 +76,10 @@ lint-yaml:
 		&& yamllint .
 	$(call footer, $@)
 
-lint-shell: $(call recursive_wildcard,$(MAKEFILE_DIR)/,*.sh)
+lint-shell:
 	$(call title, $@)
-	@if [ -n "$^" ]; then shellcheck -a -x $^; else echo "No shell scripts found, skipping shellcheck"; fi
+	@files=$$(find $(MAKEFILE_DIR) -name '*.sh' ! -path '*/tmp/*' ! -path '*/_*' 2>/dev/null); \
+        if [ -n "$$files" ]; then shellcheck -a -x $$files; else echo "No shell scripts found, skipping shellcheck"; fi
 	$(call footer, $@)
 
 # See https://github.com/andyfeller/gh-ssh-allowed-signers for automation to retrieve contributors keys
@@ -113,10 +116,10 @@ lint-licenses:
 lint-licenses-all:
 	$(call title, $@)
 	@cd $(MAKEFILE_DIR) \
-		&& GOOS=darwin make lint-licenses \
-		&& GOOS=linux make lint-licenses \
-		&& GOOS=freebsd make lint-licenses \
-		&& GOOS=windows make lint-licenses
+		&& GOOS=darwin $(MAKE) lint-licenses \
+		&& GOOS=linux $(MAKE) lint-licenses \
+		&& GOOS=freebsd $(MAKE) lint-licenses \
+		&& GOOS=windows $(MAKE) lint-licenses
 	$(call footer, $@)
 
 ##########################
@@ -131,10 +134,10 @@ fix-go:
 fix-go-all:
 	$(call title, $@)
 	@cd $(MAKEFILE_DIR) \
-		&& GOOS=darwin make fix-go \
-		&& GOOS=linux make fix-go \
-		&& GOOS=freebsd make fix-go \
-		&& GOOS=windows make fix-go
+		&& GOOS=darwin $(MAKE) fix-go \
+		&& GOOS=linux $(MAKE) fix-go \
+		&& GOOS=freebsd $(MAKE) fix-go \
+		&& GOOS=windows $(MAKE) fix-go
 	$(call footer, $@)
 
 fix-mod:
@@ -210,28 +213,3 @@ test-unit-race:
 
 # Default target
 .DEFAULT_GOAL := help
-
-# Binary name
-BINARY_NAME=agar
-BINARY_PATH=./bin/$(BINARY_NAME)
-
-# Go parameters
-GOCMD=go
-GOBUILD=$(GOCMD) build
-GOINSTALL=$(GOCMD) install
-
-build: ## Build the binary
-	@echo "Building $(BINARY_NAME)..."
-	@mkdir -p bin
-	$(GOBUILD) -o $(BINARY_PATH) ./cmd/$(BINARY_NAME)
-	@echo "Binary built: $(BINARY_PATH)"
-
-install: ## Install to GOPATH/bin
-	@echo "Installing $(BINARY_NAME)..."
-	$(GOINSTALL) ./cmd/$(BINARY_NAME)
-	@echo "Installed to $$(go env GOPATH)/bin/$(BINARY_NAME)"
-
-clean: ## Clean build artifacts
-	@echo "Cleaning..."
-	@rm -rf bin/$(BINARY_NAME)
-	@echo "Clean complete"

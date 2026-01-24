@@ -7,12 +7,16 @@ import (
 )
 
 const (
-	defaultDuration = "10"
-	shortDuration   = "3"
-	ffmpegBinary    = "ffmpeg"
-	ffprobeBinary   = "ffprobe"
-	soxBinary       = "sox"
-	metaflacBinary  = "metaflac"
+	defaultDuration     = "10"
+	shortDuration       = "3"
+	ffmpegBinary        = "ffmpeg"
+	ffprobeBinary       = "ffprobe"
+	soxBinary           = "sox"
+	metaflacBinary      = "metaflac"
+	atomicParsleyBinary = "atomicparsley"
+	id3v2Binary         = "id3v2"
+	vorbiscommentBinary = "vorbiscomment"
+	opustagsBinary      = "opustags"
 )
 
 // Genuine16bit44k returns path to genuine 16-bit 44.1kHz stereo FLAC.

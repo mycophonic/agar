@@ -46,6 +46,10 @@ func (hs *agarSetup) AmbientRequirements(_ *test.Case, testing tig.T) {
 		testing.Skip("sox not found in PATH")
 	}
 
+	if _, err := exec.LookPath(atomicParsleyBinary); err != nil {
+		testing.Skip("atomicparsley not found in PATH")
+	}
+
 	if _, err := os.Stat(hs.binary); err != nil {
 		// Binary not found at given path, try PATH lookup
 		if path, err := exec.LookPath(hs.binary); err == nil {
