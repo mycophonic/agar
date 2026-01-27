@@ -12,14 +12,14 @@ Agar provides helpers and scripts to ease generation of such files,
 specifically for the purpose of testing edge cases against broken or otherwise
 damaged audio streams (clipping, brick-walled, truncated, upsampled, etc).
 
-Agar additional uses and bundles in [Tigron](https://github.com/containerd/nerdctl/tree/main/mod/tigron),
+Agar additionally uses [Tigron](https://github.com/containerd/nerdctl/tree/main/mod/tigron),
 a golang test framework specifically designed to test binaries as blackboxes with an expressive syntax, pty handling,
 and good debugging information.
 
 Agar is primarily serving Farcloser audio libraries testing needs, but could
-presumably be used by any other audio tool.
+presumably be used by any other audio tool in need of test audio file generation.
 
-Note that Agar relies heavily on ffmpeg (of course.)
+Note that Agar relies heavily on ffmpeg for said generation (of course), and you have to install it on your own.
 
 ## Usage
 
@@ -31,9 +31,10 @@ TBD. Look at source.
 
 * golang of course
 * make
-* ffmpeg and ffprob
+* ffmpeg and ffprobe
 * sox
 * metaflac
+* other
 
 ### Initial setup
 
