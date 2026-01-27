@@ -244,35 +244,83 @@ func DynamicsExcellent(data test.Data, helpers test.Helpers) string {
 	})
 }
 
-// DynamicsOK returns path to audio with OK dynamics (LRA ~8-10 LU).
+// DynamicsOK returns path to audio with OK dynamics (DR ~8, three sine waves).
+// Three sine waves at incommensurate frequencies produce crest factor = sqrt(6) ≈ 7.78 dB → DR8.
 func DynamicsOK(data test.Data, helpers test.Helpers) string {
 	helpers.T().Helper()
 
 	return generate(helpers, filepath.Join(data.Temp().Dir(), "dynamics-ok.flac"), []string{
-		"-f", "lavfi", "-i", "anoisesrc=d=" + defaultDuration + ":c=pink:a=0.3",
-		"-af", "pan=stereo|c0=c0|c1=c0,tremolo=f=0.5:d=0.8,acompressor=threshold=-20dB:ratio=3:attack=20:release=200,volume=-6dB",
+		"-f", "lavfi", "-i", "sine=frequency=440:duration=" + defaultDuration,
+		"-f", "lavfi", "-i", "sine=frequency=554:duration=" + defaultDuration,
+		"-f", "lavfi", "-i", "sine=frequency=659:duration=" + defaultDuration,
+		"-filter_complex", "[0][1][2]amix=inputs=3,pan=stereo|c0=c0|c1=c0,volume=-6dB",
 		"-ar", "44100", "-sample_fmt", "s16",
 	})
 }
 
-// DynamicsMediocre returns path to audio with mediocre dynamics (LRA ~4-6 LU).
+// DynamicsMediocre returns path to audio with mediocre dynamics (DR ~6, two sine waves).
+// Two sine waves at different frequencies produce crest factor = 2 = 6.02 dB → DR6.
 func DynamicsMediocre(data test.Data, helpers test.Helpers) string {
 	helpers.T().Helper()
 
 	return generate(helpers, filepath.Join(data.Temp().Dir(), "dynamics-mediocre.flac"), []string{
-		"-f", "lavfi", "-i", "anoisesrc=d=" + defaultDuration + ":c=pink:a=0.3",
-		"-af", "pan=stereo|c0=c0|c1=c0,tremolo=f=0.5:d=0.8,acompressor=threshold=-15dB:ratio=8:attack=5:release=50,alimiter=limit=0.9:attack=1:release=10,volume=3dB",
+		"-f", "lavfi", "-i", "sine=frequency=440:duration=" + defaultDuration,
+		"-f", "lavfi", "-i", "sine=frequency=554:duration=" + defaultDuration,
+		"-filter_complex", "[0][1]amix=inputs=2,pan=stereo|c0=c0|c1=c0,volume=-6dB",
 		"-ar", "44100", "-sample_fmt", "s16",
 	})
 }
 
-// DynamicsFucked returns path to brickwalled audio (LRA ~2 LU).
+// DynamicsFucked returns path to brickwalled audio (DR ~3, single sine wave).
+// A pure sine wave has crest factor = sqrt(2) = 3.01 dB → DR3.
 func DynamicsFucked(data test.Data, helpers test.Helpers) string {
 	helpers.T().Helper()
 
 	return generate(helpers, filepath.Join(data.Temp().Dir(), "dynamics-fucked.flac"), []string{
+		"-f", "lavfi", "-i", "sine=frequency=440:duration=" + defaultDuration,
+		"-af", "pan=stereo|c0=c0|c1=c0,volume=-6dB",
+		"-ar", "44100", "-sample_fmt", "s16",
+	})
+}
+
+// LossyTranscodeMP3128k returns path to audio transcoded through MP3 128k back to FLAC.
+// The resulting file has a brick-wall spectral cutoff at ~16 kHz from the lossy encoding.
+func LossyTranscodeMP3128k(data test.Data, helpers test.Helpers) string {
+	helpers.T().Helper()
+
+	return generateWithPipe(helpers, filepath.Join(data.Temp().Dir(), "lossy-transcode-mp3-128k.flac"),
+		[]string{
+			"-f", "lavfi", "-i", "anoisesrc=d=" + defaultDuration + ":c=pink:a=0.5",
+			"-af", "pan=stereo|c0=c0|c1=c0,volume=-6dB",
+			"-ar", "44100",
+			"-c:a", "libmp3lame", "-b:a", "128k",
+			"-f", "mp3", "-",
+		},
+		[]string{
+			"-c:a", "flac",
+		},
+	)
+}
+
+// HumMains50Hz returns path to audio with 50Hz mains hum mixed in.
+func HumMains50Hz(data test.Data, helpers test.Helpers) string {
+	helpers.T().Helper()
+
+	return generate(helpers, filepath.Join(data.Temp().Dir(), "hum-mains-50hz.flac"), []string{
 		"-f", "lavfi", "-i", "anoisesrc=d=" + defaultDuration + ":c=pink:a=0.3",
-		"-af", "pan=stereo|c0=c0|c1=c0,tremolo=f=0.5:d=0.8,acompressor=threshold=-10dB:ratio=20:attack=1:release=10,alimiter=limit=0.95:attack=0.1:release=1,volume=6dB",
+		"-f", "lavfi", "-i", "sine=frequency=50:duration=" + defaultDuration,
+		"-filter_complex", "[0]volume=-12dB[n];[1]volume=-6dB[h];[n][h]amix=inputs=2:normalize=0,pan=stereo|c0=c0|c1=c0",
+		"-ar", "44100", "-sample_fmt", "s16",
+	})
+}
+
+// ChannelImbalanceLeft returns path to stereo audio with left channel significantly louder.
+func ChannelImbalanceLeft(data test.Data, helpers test.Helpers) string {
+	helpers.T().Helper()
+
+	return generate(helpers, filepath.Join(data.Temp().Dir(), "channel-imbalance-left.flac"), []string{
+		"-f", "lavfi", "-i", "anoisesrc=d=" + defaultDuration + ":c=pink:a=0.5",
+		"-af", "pan=stereo|c0=1.0*c0|c1=0.1*c0,volume=-6dB",
 		"-ar", "44100", "-sample_fmt", "s16",
 	})
 }
