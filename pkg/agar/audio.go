@@ -302,14 +302,16 @@ func LossyTranscodeMP3128k(data test.Data, helpers test.Helpers) string {
 	)
 }
 
-// HumMains50Hz returns path to audio with 50Hz mains hum mixed in.
+// HumMains50Hz returns path to audio with 50Hz mains hum mixed into quiet room tone.
+// This simulates real mains hum from poorly grounded equipment: a persistent 50Hz sine
+// riding on top of a quiet noise floor, as found in vinyl rips and analog recordings.
 func HumMains50Hz(data test.Data, helpers test.Helpers) string {
 	helpers.T().Helper()
 
 	return generate(helpers, filepath.Join(data.Temp().Dir(), "hum-mains-50hz.flac"), []string{
-		"-f", "lavfi", "-i", "anoisesrc=d=" + defaultDuration + ":c=pink:a=0.3",
+		"-f", "lavfi", "-i", "anoisesrc=d=" + defaultDuration + ":c=pink:a=0.005",
 		"-f", "lavfi", "-i", "sine=frequency=50:duration=" + defaultDuration,
-		"-filter_complex", "[0]volume=-12dB[n];[1]volume=-6dB[h];[n][h]amix=inputs=2:normalize=0,pan=stereo|c0=c0|c1=c0",
+		"-filter_complex", "[0]volume=-40dB[n];[1]volume=-20dB[h];[n][h]amix=inputs=2:normalize=0,pan=stereo|c0=c0|c1=c0",
 		"-ar", "44100", "-sample_fmt", "s16",
 	})
 }
