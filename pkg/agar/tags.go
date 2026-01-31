@@ -1,3 +1,19 @@
+/*
+   Copyright Mycophonic.
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
+
 package agar
 
 import (
@@ -46,14 +62,16 @@ func DefaultFLACTags() FLACTags {
 func AddTag(helpers test.Helpers, path, key, value string) {
 	helpers.T().Helper()
 
-	helpers.Custom(metaflacBinary, "--set-tag="+key+"="+value, path).Run(&test.Expected{})
+	mf := lookForOrFail(helpers.T(), metaflacBinary)
+	helpers.Custom(mf, "--set-tag="+key+"="+value, path).Run(&test.Expected{})
 }
 
 // RemoveTag removes all instances of a tag from a FLAC file using metaflac.
 func RemoveTag(helpers test.Helpers, path, key string) {
 	helpers.T().Helper()
 
-	helpers.Custom(metaflacBinary, "--remove-tag="+key, path).Run(&test.Expected{})
+	mf := lookForOrFail(helpers.T(), metaflacBinary)
+	helpers.Custom(mf, "--remove-tag="+key, path).Run(&test.Expected{})
 }
 
 // SetTag sets a tag value, removing any existing values for that key first.

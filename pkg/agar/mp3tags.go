@@ -1,3 +1,19 @@
+/*
+   Copyright Mycophonic.
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
+
 package agar
 
 import (
@@ -134,7 +150,8 @@ func MP3SetID3Tags(helpers test.Helpers, path string, version ID3Version, tags M
 
 	args = append(args, path)
 
-	helpers.Custom(id3v2Binary, args...).Run(&test.Expected{})
+	id3v2 := lookForOrFail(helpers.T(), id3v2Binary)
+	helpers.Custom(id3v2, args...).Run(&test.Expected{})
 }
 
 // TaggedMP3 returns path to MP3 with ID3v2.4 tags (default).
