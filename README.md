@@ -16,7 +16,7 @@ Agar additionally uses [Tigron](https://github.com/containerd/nerdctl/tree/main/
 a Go test framework specifically designed to test binaries as blackboxes with an expressive syntax, pty handling,
 and good debugging information.
 
-Agar is primarily serving Farcloser audio libraries testing needs, but could
+Agar is primarily serving Mycophonic audio libraries testing needs, but could
 presumably be used by any other audio tool in need of test audio file generation.
 
 Note that Agar relies heavily on ffmpeg for said generation (of course), and you have to install it on your own.

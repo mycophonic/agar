@@ -1,9 +1,22 @@
+/*
+   Copyright Mycophonic.
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
+
 package agar
 
 import (
-	"os"
-	"os/exec"
-
 	"github.com/containerd/nerdctl/mod/tigron/test"
 	"github.com/containerd/nerdctl/mod/tigron/tig"
 )
@@ -23,43 +36,34 @@ func (hs *agarSetup) CustomCommand(_ *test.Case, _ tig.T) test.CustomizableComma
 		"PATH",
 		"HOME",
 		"XDG_*",
+		// Windows
+		"SYSTEMROOT",
+		"SYSTEMDRIVE",
+		"COMSPEC",
+		"TEMP",
+		"TMP",
+		"USERPROFILE",
+		"PATHEXT",
 	})
 
 	return &gen
 }
 
 // AmbientRequirements checks environment prerequisites.
-func (hs *agarSetup) AmbientRequirements(_ *test.Case, testing tig.T) {
-	if _, err := exec.LookPath(ffprobeBinary); err != nil {
-		testing.Skip("ffprobe not found in PATH")
-	}
-
-	if _, err := exec.LookPath(ffmpegBinary); err != nil {
-		testing.Skip("ffmpeg not found in PATH")
-	}
-
-	if _, err := exec.LookPath(metaflacBinary); err != nil {
-		testing.Skip("ffmpeg not found in PATH")
-	}
-
-	if _, err := exec.LookPath(soxBinary); err != nil {
-		testing.Skip("sox not found in PATH")
-	}
-
-	if _, err := exec.LookPath(atomicParsleyBinary); err != nil {
-		testing.Skip("atomicparsley not found in PATH")
-	}
-
-	if _, err := os.Stat(hs.binary); err != nil {
-		// Binary not found at given path, try PATH lookup
-		if path, err := exec.LookPath(hs.binary); err == nil {
-			hs.binary = path
-		} else {
-			testing.Log("binary %s not found: run 'make build' or install your binary in PATH", hs.binary)
-			testing.FailNow()
+func (hs *agarSetup) AmbientRequirements(_ *test.Case, helper tig.T) {
+	for _, bin := range []string{ffprobeBinary, ffmpegBinary, metaflacBinary, soxBinary, atomicParsleyBinary} {
+		if _, err := LookFor(bin); err != nil {
+			helper.Skip(bin + " not found")
 		}
 	}
-	// else: binary exists at the given path, use it as-is
+
+	path, err := LookFor(hs.binary)
+	if err != nil {
+		helper.Log(hs.binary + " not found: run 'make build' or install in PATH")
+		helper.FailNow()
+	}
+
+	hs.binary = path
 }
 
 // Setup initializes tigron with minimal customization and returns a base test case.

@@ -1,3 +1,19 @@
+/*
+   Copyright Mycophonic.
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
+
 package agar
 
 import (
@@ -107,7 +123,8 @@ func MP4SetAllTags(helpers test.Helpers, path string, tags MP4Tags) {
 func MP4SetTag(helpers test.Helpers, path, key, value string) {
 	helpers.T().Helper()
 
-	helpers.Custom(atomicParsleyBinary, path, "--"+key, value, "--overWrite").Run(&test.Expected{})
+	ap := lookForOrFail(helpers.T(), atomicParsleyBinary)
+	helpers.Custom(ap, path, "--"+key, value, "--overWrite").Run(&test.Expected{})
 }
 
 // MP4SetFreeformTag sets a freeform tag on an MP4 file using atomicparsley.
@@ -116,8 +133,9 @@ func MP4SetTag(helpers test.Helpers, path, key, value string) {
 func MP4SetFreeformTag(helpers test.Helpers, path, domain, name, value string) {
 	helpers.T().Helper()
 
+	ap := lookForOrFail(helpers.T(), atomicParsleyBinary)
 	// AtomicParsley syntax: --rDNSatom "value" name=NAME domain=DOMAIN
-	helpers.Custom(atomicParsleyBinary, path,
+	helpers.Custom(ap, path,
 		"--rDNSatom", value,
 		"name="+name,
 		"domain="+domain,
@@ -129,7 +147,8 @@ func MP4SetFreeformTag(helpers test.Helpers, path, domain, name, value string) {
 func MP4SetArtwork(helpers test.Helpers, path, artworkPath string) {
 	helpers.T().Helper()
 
-	helpers.Custom(atomicParsleyBinary, path, "--artwork", artworkPath, "--overWrite").Run(&test.Expected{})
+	ap := lookForOrFail(helpers.T(), atomicParsleyBinary)
+	helpers.Custom(ap, path, "--artwork", artworkPath, "--overWrite").Run(&test.Expected{})
 }
 
 // MP4RemoveAllTags removes all metadata from an MP4 file using atomicparsley.
@@ -137,7 +156,8 @@ func MP4SetArtwork(helpers test.Helpers, path, artworkPath string) {
 func MP4RemoveAllTags(helpers test.Helpers, path string) {
 	helpers.T().Helper()
 
-	helpers.Custom(atomicParsleyBinary, path, "--metaEnema", "--overWrite").Run(&test.Expected{})
+	ap := lookForOrFail(helpers.T(), atomicParsleyBinary)
+	helpers.Custom(ap, path, "--metaEnema", "--overWrite").Run(&test.Expected{})
 }
 
 // MP4RemoveArtwork removes all artwork from an MP4 file using atomicparsley.
@@ -145,7 +165,8 @@ func MP4RemoveAllTags(helpers test.Helpers, path string) {
 func MP4RemoveArtwork(helpers test.Helpers, path string) {
 	helpers.T().Helper()
 
-	helpers.Custom(atomicParsleyBinary, path, "--artwork", "REMOVE_ALL", "--overWrite").Run(&test.Expected{})
+	ap := lookForOrFail(helpers.T(), atomicParsleyBinary)
+	helpers.Custom(ap, path, "--artwork", "REMOVE_ALL", "--overWrite").Run(&test.Expected{})
 }
 
 // MP4VerifyTagWithAtomicParsley verifies a tag value using atomicparsley.
@@ -154,8 +175,9 @@ func MP4RemoveArtwork(helpers test.Helpers, path string) {
 func MP4VerifyTagWithAtomicParsley(helpers test.Helpers, path string) {
 	helpers.T().Helper()
 
+	ap := lookForOrFail(helpers.T(), atomicParsleyBinary)
 	// Just verify atomicparsley can read the file without error
-	helpers.Custom(atomicParsleyBinary, path, "-t").Run(&test.Expected{})
+	helpers.Custom(ap, path, "-t").Run(&test.Expected{})
 }
 
 // TaggedAAC returns path to AAC with standard metadata tags set via atomicparsley.

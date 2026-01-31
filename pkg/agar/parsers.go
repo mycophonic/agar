@@ -1,3 +1,19 @@
+/*
+   Copyright Mycophonic.
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
+
 package agar
 
 import (
@@ -57,14 +73,20 @@ var atomicParsleyArtworkRE = regexp.MustCompile(`^Atom "covr" contains: (\d+) pi
 
 // ParseAtomicParsley runs AtomicParsley -t on the file and parses output.
 func ParseAtomicParsley(ctx context.Context, filePath string) (*ParsedTags, error) {
-	cmd := exec.CommandContext(ctx, atomicParsleyBinary, filePath, "-t")
+	atomicParsley, err := LookFor(atomicParsleyBinary)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", atomicParsleyBinary, err)
+	}
+
+	//nolint:gosec // binary resolved by LookFor
+	cmd := exec.CommandContext(ctx, atomicParsley, filePath, "-t")
 
 	var stdout, stderr bytes.Buffer
 
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
 
-	err := cmd.Run()
+	err = cmd.Run()
 	if err != nil {
 		return nil, fmt.Errorf("atomicparsley failed: %w\nstderr: %s", err, stderr.String())
 	}
@@ -147,14 +169,20 @@ func ParseAtomicParsley(ctx context.Context, filePath string) (*ParsedTags, erro
 
 // ParseMetaflac runs metaflac --export-tags-to=- on the file and parses output.
 func ParseMetaflac(ctx context.Context, filePath string) (*ParsedTags, error) {
-	cmd := exec.CommandContext(ctx, metaflacBinary, "--export-tags-to=-", filePath)
+	metaflac, err := LookFor(metaflacBinary)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", metaflacBinary, err)
+	}
+
+	//nolint:gosec // binary resolved by LookFor
+	cmd := exec.CommandContext(ctx, metaflac, "--export-tags-to=-", filePath)
 
 	var stdout, stderr bytes.Buffer
 
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
 
-	err := cmd.Run()
+	err = cmd.Run()
 	if err != nil {
 		return nil, fmt.Errorf("metaflac failed: %w\nstderr: %s", err, stderr.String())
 	}
@@ -213,7 +241,13 @@ func ParseMetaflac(ctx context.Context, filePath string) (*ParsedTags, error) {
 
 // countMetaflacPictures counts PICTURE blocks in a FLAC file.
 func countMetaflacPictures(ctx context.Context, filePath string) int {
-	cmd := exec.CommandContext(ctx, metaflacBinary, "--list", "--block-type=PICTURE", filePath)
+	metaflac, err := LookFor(metaflacBinary)
+	if err != nil {
+		return 0
+	}
+
+	//nolint:gosec // binary resolved by LookFor
+	cmd := exec.CommandContext(ctx, metaflac, "--list", "--block-type=PICTURE", filePath)
 
 	output, err := cmd.Output()
 	if err != nil {
