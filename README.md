@@ -32,7 +32,7 @@ TBD. Look at source.
 * Go itself of course
 * make
 * ffmpeg and ffprobe
-* sox
+* sox_ng (`brew install sox_ng` — provides the `sox` binary with DSD support)
 * metaflac
 * other
 
