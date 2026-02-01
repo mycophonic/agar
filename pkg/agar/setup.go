@@ -17,6 +17,10 @@
 package agar
 
 import (
+	"context"
+	"os/exec"
+	"strings"
+
 	"github.com/containerd/nerdctl/mod/tigron/test"
 	"github.com/containerd/nerdctl/mod/tigron/tig"
 )
@@ -57,6 +61,8 @@ func (hs *agarSetup) AmbientRequirements(_ *test.Case, helper tig.T) {
 		}
 	}
 
+	requireSoxNG(helper)
+
 	path, err := LookFor(hs.binary)
 	if err != nil {
 		helper.Log(hs.binary + " not found: run 'make build' or install in PATH")
@@ -64,6 +70,29 @@ func (hs *agarSetup) AmbientRequirements(_ *test.Case, helper tig.T) {
 	}
 
 	hs.binary = path
+}
+
+// requireSoxNG verifies that the installed sox binary is sox_ng (which provides DSD support).
+// Standard sox lacks DSF/DFF I/O and the sdm effect needed for DSD test file generation.
+func requireSoxNG(helper tig.T) {
+	helper.Helper()
+
+	soxPath, err := LookFor(soxBinary)
+	if err != nil {
+		return // already handled by the binary check above
+	}
+
+	//nolint:gosec // soxPath comes from LookFor
+	out, err := exec.CommandContext(
+		context.Background(), soxPath, "--version",
+	).Output()
+	if err != nil {
+		helper.Skip("sox --version failed: " + err.Error())
+	}
+
+	if !strings.Contains(string(out), "SoX_ng") {
+		helper.Skip("sox is not sox_ng (missing DSD support); install with: brew install sox_ng")
+	}
 }
 
 // Setup initializes tigron with minimal customization and returns a base test case.
