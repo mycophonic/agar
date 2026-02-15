@@ -262,7 +262,9 @@ linters:
             - $all
           allow:
             - $gostd
+            - github.com/mycophonic/agar
             - github.com/mycophonic/hypha
+            - github.com/mycophonic/primordium
             - github.com/urfave/cli/v3
             - golang.org/x/sync/errgroup
             - github.com/containerd/nerdctl/mod/tigron

@@ -16,9 +16,27 @@
    limitations under the License.
 */
 
-package agar
+package coreaudio
 
-// CoreAudioDecode is unavailable without darwin CGO.
-func CoreAudioDecode(_ []byte) ([]byte, error) {
-	return nil, ErrCoreAudioUnavailable
+// cgoCodec stub for non-darwin platforms.
+type cgoCodec struct{}
+
+// NewCGO returns a Codec stub that always returns ErrUnavailable.
+func NewCGO() Codec {
+	return &cgoCodec{}
+}
+
+// Available reports whether CGO AudioToolbox is available.
+func (*cgoCodec) Available() bool {
+	return false
+}
+
+// Decode is unavailable on non-darwin platforms.
+func (*cgoCodec) Decode(_ []byte) ([]byte, Format, error) {
+	return nil, Format{}, ErrUnavailable
+}
+
+// Encode is unavailable on non-darwin platforms.
+func (*cgoCodec) Encode(_ []byte, _ Format) ([]byte, error) {
+	return nil, ErrUnavailable
 }

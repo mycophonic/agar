@@ -20,24 +20,33 @@ import (
 	"errors"
 	"testing"
 	"time"
+
+	"github.com/mycophonic/agar/pkg/coreaudio"
 )
 
-// ErrCoreAudioUnavailable is returned when AudioToolbox is not available
-// (non-darwin platform or CGO disabled).
-var ErrCoreAudioUnavailable = errors.New("coreaudio: AudioToolbox not available on this platform")
-
-// BenchDecodeCoreAudio benchmarks CoreAudio decoding via CGO (in-process).
-// It skips the test if CoreAudio is not available on the current platform.
-func BenchDecodeCoreAudio(t *testing.T, format BenchFormat, opts BenchOptions, encoded []byte) BenchResult {
+// BenchDecodeCodec benchmarks decoding using the given coreaudio.Codec.
+// It skips the test if the codec is not available.
+func BenchDecodeCodec(
+	t *testing.T,
+	codec coreaudio.Codec,
+	name string,
+	format BenchFormat,
+	opts BenchOptions,
+	encoded []byte,
+) BenchResult {
 	t.Helper()
 
-	// Verify CGO decode works before benchmarking.
-	if _, err := CoreAudioDecode(encoded); err != nil {
-		if errors.Is(err, ErrCoreAudioUnavailable) {
-			t.Skip("CoreAudio not available on this platform")
+	if !codec.Available() {
+		t.Skipf("%s codec not available", name)
+	}
+
+	// Verify decode works before benchmarking.
+	if _, _, err := codec.Decode(encoded); err != nil {
+		if errors.Is(err, coreaudio.ErrUnavailable) {
+			t.Skipf("%s not available on this platform", name)
 		}
 
-		t.Fatalf("coreaudio: %v", err)
+		t.Fatalf("%s: %v", name, err)
 	}
 
 	opts = opts.WithDefaults()
@@ -46,13 +55,21 @@ func BenchDecodeCoreAudio(t *testing.T, format BenchFormat, opts BenchOptions, e
 	for iter := range opts.Iterations {
 		start := time.Now()
 
-		_, err := CoreAudioDecode(encoded)
+		_, _, err := codec.Decode(encoded)
 		if err != nil {
-			t.Fatalf("coreaudio iter %d: %v", iter, err)
+			t.Fatalf("%s iter %d: %v", name, iter, err)
 		}
 
 		durations[iter] = time.Since(start)
 	}
 
-	return ComputeResult(format, "coreaudio", "decode", durations, len(encoded))
+	return ComputeResult(format, name, "decode", durations, len(encoded))
+}
+
+// BenchDecodeCoreAudio benchmarks CoreAudio decoding via CGO (in-process).
+// It skips the test if CoreAudio is not available on the current platform.
+func BenchDecodeCoreAudio(t *testing.T, format BenchFormat, opts BenchOptions, encoded []byte) BenchResult {
+	t.Helper()
+
+	return BenchDecodeCodec(t, coreaudio.NewCGO(), "coreaudio", format, opts, encoded)
 }
