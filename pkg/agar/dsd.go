@@ -23,6 +23,8 @@ import (
 	"path/filepath"
 
 	"github.com/containerd/nerdctl/mod/tigron/tig"
+
+	"github.com/mycophonic/primordium/filesystem"
 )
 
 const (
@@ -44,9 +46,6 @@ const (
 
 	// bitsPerByte is used for bit-packing arithmetic.
 	bitsPerByte = 8
-
-	// dsdFileMode is the permission mode for generated DSD test files.
-	dsdFileMode = 0o600
 )
 
 // DSDSine writes raw DSD bytes for a sine wave at the given frequency.
@@ -164,7 +163,7 @@ func sigmaDeltaModulate(pcm []float64, oversampleRatio int) []byte {
 func writeDSDFile(helper tig.T, path string, data []byte) {
 	helper.Helper()
 
-	if err := os.WriteFile(path, data, dsdFileMode); err != nil {
+	if err := os.WriteFile(path, data, filesystem.FilePermissionsPrivate); err != nil {
 		helper.Log("writing DSD file: " + err.Error())
 		helper.FailNow()
 	}
