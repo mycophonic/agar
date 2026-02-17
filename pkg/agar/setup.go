@@ -18,6 +18,7 @@ package agar
 
 import (
 	"context"
+	"os"
 	"os/exec"
 	"strings"
 
@@ -63,13 +64,10 @@ func (hs *agarSetup) AmbientRequirements(_ *test.Case, helper tig.T) {
 
 	requireSoxNG(helper)
 
-	path, err := LookFor(hs.binary)
-	if err != nil {
+	if _, err := os.Stat(hs.binary); err != nil {
 		helper.Log(hs.binary + " not found: run 'make build' or install in PATH")
 		helper.FailNow()
 	}
-
-	hs.binary = path
 }
 
 // requireSoxNG verifies that the installed sox binary is sox_ng (which provides DSD support).
@@ -96,9 +94,18 @@ func requireSoxNG(helper tig.T) {
 }
 
 // Setup initializes tigron with minimal customization and returns a base test case.
+// The binary is resolved to an absolute path here so that the shared agarSetup
+// instance is immutable once concurrent subtests begin.
 func Setup(binary string) *test.Case {
+	path, err := LookFor(binary)
+	if err != nil {
+		// LookFor failed at setup time — AmbientRequirements will catch this
+		// via os.Stat and fail/skip the test with a helpful message.
+		path = binary
+	}
+
 	test.Customize(&agarSetup{
-		binary: binary,
+		binary: path,
 	})
 
 	return &test.Case{
