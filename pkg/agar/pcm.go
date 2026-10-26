@@ -82,48 +82,48 @@ func GenerateWhiteNoise(sampleRate, bitDepth, channels, durationSec int) []byte 
 
 		switch bitDepth {
 		case BitDepth4:
-			buf[offset] = byte(int8((seed % 14) - 7)) //nolint:gosec // G115: modulo bounds result to -7..+6, fits int8.
+			buf[offset] = byte(int8((seed % 14) - 7)) // #nosec G115 -- modulo bounds result to -7..+6, fits int8.
 		case BitDepth8:
 			buf[offset] = byte(
-				int8((seed % 240) - 120), //nolint:gosec // G115: modulo bounds result to -120..+119, fits int8.
+				int8((seed % 240) - 120),
 			)
 		case BitDepth12:
-			val := int16( //nolint:gosec // G115: modulo bounds result to -2000..+1999, fits int16.
+			val := int16(
 				(seed % 4000) - 2000,
 			)
 			binary.LittleEndian.PutUint16(
 				buf[offset:],
-				uint16(val), //nolint:gosec // G115: reinterpret cast for LE encoding.
+				uint16(val), // #nosec G115 -- reinterpret cast for LE encoding.
 			)
 		case BitDepth16:
-			val := int16( //nolint:gosec // G115: modulo bounds result to -30000..+29999, fits int16.
+			val := int16(
 				(seed % 60000) - 30000,
 			)
 			binary.LittleEndian.PutUint16(
 				buf[offset:],
-				uint16(val), //nolint:gosec // G115: reinterpret cast for LE encoding.
+				uint16(val), // #nosec G115 -- reinterpret cast for LE encoding.
 			)
 		case BitDepth20:
-			val := int32( //nolint:gosec // G115: modulo bounds result to ±500000, fits int32.
+			val := int32(
 				(seed % 1000000) - 500000,
 			)
 			buf[offset] = byte(val)
 			buf[offset+1] = byte(val >> bitsPerByte)
 			buf[offset+2] = byte(val >> (2 * bitsPerByte))
 		case BitDepth24:
-			val := int32( //nolint:gosec // G115: modulo bounds result to ±7000000, fits int32.
+			val := int32(
 				(seed % 14000000) - 7000000,
 			)
 			buf[offset] = byte(val)
 			buf[offset+1] = byte(val >> bitsPerByte)
 			buf[offset+2] = byte(val >> (2 * bitsPerByte))
 		case BitDepth32:
-			val := int32( //nolint:gosec // G115: modulo bounds result to ±900M, fits int32.
+			val := int32(
 				(seed % 1800000000) - 900000000,
 			)
 			binary.LittleEndian.PutUint32(
 				buf[offset:],
-				uint32(val), //nolint:gosec // G115: reinterpret cast for LE encoding.
+				uint32(val), // #nosec G115 -- reinterpret cast for LE encoding.
 			)
 
 		default:
@@ -205,10 +205,10 @@ func CompareLossySamples(t *testing.T, pcmA, pcmB []byte, bitDepth, channels int
 	maxDiff := int16(0)
 
 	for idx := range numSamples {
-		sampleA := int16( //nolint:gosec // G115: reinterpret uint16 as signed for PCM comparison.
+		sampleA := int16( // #nosec G115 -- reinterpret uint16 as signed for PCM comparison.
 			binary.LittleEndian.Uint16(pcmA[idx*2:]),
 		)
-		sampleB := int16( //nolint:gosec // G115: reinterpret uint16 as signed for PCM comparison.
+		sampleB := int16( // #nosec G115 -- reinterpret uint16 as signed for PCM comparison.
 			binary.LittleEndian.Uint16(pcmB[idx*2:]),
 		)
 

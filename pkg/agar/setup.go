@@ -80,7 +80,7 @@ func requireSoxNG(helper tig.T) {
 		return // already handled by the binary check above
 	}
 
-	//nolint:gosec // soxPath comes from LookFor
+	// #nosec G204 -- soxPath comes from LookFor
 	out, err := exec.CommandContext(
 		context.Background(), soxPath, "--version",
 	).Output()
