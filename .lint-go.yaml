@@ -75,3 +75,61 @@ golangci:
               # The toolkit's dependencies, each a reviewed choice.
               - github.com/containerd/nerdctl/mod/tigron # the test command runner it builds on
               - github.com/mycophonic/primordium # the house filesystem and app helpers
+    exclusions:
+      rules:
+        # ---------------------------------------------------------------------------
+        # ONBOARDING BACKLOG. Not a judgment: these are the findings the baseline
+        # raised on code that predates it, exempted so the enrolment lands green
+        # (book/mandatory-files.md, "Onboarding an existing repository"). Nobody has
+        # read them yet. Alignment empties this block one linter or one package per
+        # pull request, each finding fixed, silenced inline with its reason, or
+        # raised as a rule; the last alignment pull request deletes the block.
+        # Counts are the measurement at enrolment, per file and linter: 116 in 12 files,
+        # the union of two builds. The cgo-off build, identical on the five lint
+        # platforms, has 108; the macOS cgo build (lint-cgo) has 115. cgo_stub.go's 1
+        # compiles only without cgo, and cgo_darwin.go's 8 only with it.
+        # ---------------------------------------------------------------------------
+        - path: ^pkg/agar/audio\.go$
+          linters: # 19 findings
+            - goconst # 19
+        - path: ^pkg/agar/bench\.go$
+          linters: # 2 findings
+            - mnd # 2
+        - path: ^pkg/agar/ffmpeg\.go$
+          linters: # 2 findings
+            - goconst # 1
+            - usetesting # 1
+        - path: ^pkg/agar/mp3tags\.go$
+          linters: # 16 findings
+            - goconst # 15
+            - gocognit # 1
+        - path: ^pkg/agar/mp4tags\.go$
+          linters: # 15 findings
+            - goconst # 15
+        - path: ^pkg/agar/oggtags\.go$
+          linters: # 14 findings
+            - goconst # 14
+        - path: ^pkg/agar/parsers\.go$
+          linters: # 1 findings
+            - gocritic # 1
+        - path: ^pkg/agar/pcm\.go$
+          linters: # 20 findings
+            - mnd # 13
+            - gosec # 7
+        - path: ^pkg/agar/tags\.go$
+          linters: # 13 findings
+            - goconst # 13
+        - path: ^pkg/coreaudio/binary\.go$
+          linters: # 5 findings
+            - errcheck # 2
+            - govet # 2
+            - iface # 1
+        - path: ^pkg/coreaudio/cgo_darwin\.go$
+          linters: # 8 findings
+            - revive # 3
+            - gocritic # 2
+            - varnamelen # 2
+            - iface # 1
+        - path: ^pkg/coreaudio/cgo_stub\.go$
+          linters: # 1 findings
+            - iface # 1
