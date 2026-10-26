@@ -98,9 +98,12 @@ package coreaudio
         return 1;
     }
 
-    // Determine output bit depth.
+    // Determine output bit depth. A lossless source (ALAC, FLAC) reports no
+    // bits per channel; its format flags name the source depth instead, the
+    // same values for both (afinfo: "flac (0x00000001) from 16-bit source").
     UInt32 outBits = srcFormat.mBitsPerChannel;
-    if (outBits == 0 && srcFormat.mFormatID == kAudioFormatAppleLossless) {
+    if (outBits == 0 && (srcFormat.mFormatID == kAudioFormatAppleLossless ||
+                         srcFormat.mFormatID == kAudioFormatFLAC)) {
         switch (srcFormat.mFormatFlags) {
         case kAppleLosslessFormatFlag_16BitSourceData: outBits = 16; break;
         case kAppleLosslessFormatFlag_20BitSourceData: outBits = 20; break;
