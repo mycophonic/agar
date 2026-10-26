@@ -209,7 +209,8 @@ func SilenceMiddleGap(data test.Data, helpers test.Helpers) string {
 		"-f", "lavfi", "-i", "sine=frequency=440:duration=" + shortDuration,
 		"-f", "lavfi", "-i", "anullsrc=r=44100:cl=stereo:d=6",
 		"-f", "lavfi", "-i", "sine=frequency=440:duration=" + shortDuration,
-		"-filter_complex", "[0]pan=stereo|c0=c0|c1=c0[a];[2]pan=stereo|c0=c0|c1=c0[b];[a][1][b]concat=n=3:v=0:a=1,volume=-6dB",
+		"-filter_complex",
+		"[0]pan=stereo|c0=c0|c1=c0[a];[2]pan=stereo|c0=c0|c1=c0[b];[a][1][b]concat=n=3:v=0:a=1,volume=-6dB",
 		"-ar", "44100", "-sample_fmt", "s16",
 	})
 }
@@ -327,7 +328,8 @@ func HumMains50Hz(data test.Data, helpers test.Helpers) string {
 	return generate(helpers, filepath.Join(data.Temp().Dir(), "hum-mains-50hz.flac"), []string{
 		"-f", "lavfi", "-i", "anoisesrc=d=" + defaultDuration + ":c=pink:a=0.005",
 		"-f", "lavfi", "-i", "sine=frequency=50:duration=" + defaultDuration,
-		"-filter_complex", "[0]volume=-40dB[n];[1]volume=-20dB[h];[n][h]amix=inputs=2:normalize=0,pan=stereo|c0=c0|c1=c0",
+		"-filter_complex",
+		"[0]volume=-40dB[n];[1]volume=-20dB[h];[n][h]amix=inputs=2:normalize=0,pan=stereo|c0=c0|c1=c0",
 		"-ar", "44100", "-sample_fmt", "s16",
 	})
 }
@@ -387,7 +389,10 @@ func MultiStream3Audio(data test.Data, helpers test.Helpers) string {
 		"-f", "lavfi", "-i", "sine=frequency=440:duration=" + defaultDuration,
 		"-f", "lavfi", "-i", "sine=frequency=880:duration=" + defaultDuration,
 		"-f", "lavfi", "-i", "anoisesrc=d=" + defaultDuration + ":c=pink:a=0.2",
-		"-filter_complex", "[0]pan=stereo|c0=c0|c1=c0,volume=-6dB[a0];[1]pan=stereo|c0=c0|c1=c0,volume=-6dB[a1];[2]pan=stereo|c0=c0|c1=c0,volume=-12dB[a2]",
+		"-filter_complex",
+		"[0]pan=stereo|c0=c0|c1=c0,volume=-6dB[a0];" +
+			"[1]pan=stereo|c0=c0|c1=c0,volume=-6dB[a1];" +
+			"[2]pan=stereo|c0=c0|c1=c0,volume=-12dB[a2]",
 		"-map", "[a0]", "-map", "[a1]", "-map", "[a2]",
 		"-c:a:0", "flac", "-c:a:1", "flac", "-c:a:2", "flac",
 		"-metadata:s:a:0", "title=440Hz Sine",

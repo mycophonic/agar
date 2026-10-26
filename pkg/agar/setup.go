@@ -36,7 +36,7 @@ func (hs *agarSetup) CustomCommand(_ *test.Case, _ tig.T) test.CustomizableComma
 	cmd := test.NewGenericCommand()
 	cmd.WithBinary(hs.binary)
 
-	gen := *(cmd.(*test.GenericCommand))
+	gen := *cmd.(*test.GenericCommand)
 	gen.WithWhitelist([]string{
 		"PATH",
 		"HOME",
