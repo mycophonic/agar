@@ -4,7 +4,7 @@ go 1.26.0
 
 require (
 	github.com/containerd/nerdctl/mod/tigron v0.0.0-20260212081135-61a62f37ccbf
-	github.com/mycophonic/primordium v0.15.0
+	github.com/mycophonic/primordium v0.15.1
 )
 
 require (
