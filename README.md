@@ -29,23 +29,19 @@ TBD. Look at source.
 
 ### Requirements
 
-* Go itself of course
-* make
+* [just](https://github.com/casey/just) and limen's toolset: `just` runs every
+  task on the pinned tools (Go, the linters), described in `AGENTS.md`
 * ffmpeg and ffprobe
-* sox_ng (`brew install sox_ng` — provides the `sox` binary with DSD support)
+* sox_ng (`brew install sox_ng`, which provides the `sox` binary with DSD support)
 * metaflac
 * other
-
-### Initial setup
-
-```bash
-make install-dev-tools
-```
 
 ### Lifecycle
 
 ```bash
-make lint
-make fix
-make test
+just lint
+just fix
+just test
 ```
+
+`just` alone lists every recipe, the shared `just do …` tree included.

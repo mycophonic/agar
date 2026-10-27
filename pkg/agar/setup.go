@@ -36,7 +36,7 @@ func (hs *agarSetup) CustomCommand(_ *test.Case, _ tig.T) test.CustomizableComma
 	cmd := test.NewGenericCommand()
 	cmd.WithBinary(hs.binary)
 
-	gen := *(cmd.(*test.GenericCommand))
+	gen := *cmd.(*test.GenericCommand)
 	gen.WithWhitelist([]string{
 		"PATH",
 		"HOME",
@@ -80,7 +80,7 @@ func requireSoxNG(helper tig.T) {
 		return // already handled by the binary check above
 	}
 
-	//nolint:gosec // soxPath comes from LookFor
+	// #nosec G204 -- soxPath comes from LookFor
 	out, err := exec.CommandContext(
 		context.Background(), soxPath, "--version",
 	).Output()

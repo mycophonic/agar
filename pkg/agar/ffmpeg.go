@@ -64,7 +64,7 @@ func FFmpeg(t *testing.T, opts FFmpegOptions) FFmpegResult {
 		t.FailNow()
 	}
 
-	//nolint:gosec // arguments are test-controlled
+	// #nosec G204 -- arguments are test-controlled
 	cmd := exec.CommandContext(context.Background(), ffmpegPath, opts.Args...)
 
 	if opts.Stdin != nil {

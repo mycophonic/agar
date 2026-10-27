@@ -84,7 +84,7 @@ func (b *binaryCodec) Decode(data []byte) ([]byte, Format, error) {
 	// Run binary: alac-coreaudio decode <input> -
 	var stdout, stderr bytes.Buffer
 
-	//nolint:gosec // G204: binary path is caller-controlled, inputPath is temp file we created.
+	// #nosec G204 -- binary path is caller-controlled, inputPath is temp file we created.
 	cmd := exec.CommandContext(context.Background(), b.path, "decode", inputPath, "-")
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
@@ -130,7 +130,7 @@ func (b *binaryCodec) Encode(pcm []byte, format Format) ([]byte, error) {
 	// Run binary: alac-coreaudio encode --sample-rate N --bit-depth N --channels N <input> <output>
 	var stderr bytes.Buffer
 
-	//nolint:gosec // G204: binary path is caller-controlled, paths are temp files we created.
+	// #nosec G204 -- binary path is caller-controlled, paths are temp files we created.
 	cmd := exec.CommandContext(context.Background(), b.path,
 		"encode",
 		"--sample-rate", strconv.Itoa(format.SampleRate),
@@ -145,7 +145,7 @@ func (b *binaryCodec) Encode(pcm []byte, format Format) ([]byte, error) {
 	}
 
 	// Read encoded output.
-	m4a, err := os.ReadFile(outputPath) //nolint:gosec // G304: outputPath is temp file we created.
+	m4a, err := os.ReadFile(outputPath) // #nosec G304 -- outputPath is temp file we created.
 	if err != nil {
 		return nil, fmt.Errorf("%w: %w", ErrEncodeFailed, err)
 	}

@@ -82,7 +82,7 @@ func FFProbe(path string) (*FFProbeResult, error) {
 		return nil, err
 	}
 
-	//nolint:gosec // path is intentionally user-provided
+	// #nosec G204 -- path is intentionally user-provided
 	cmd := exec.CommandContext(context.Background(), ffprobePath,
 		"-v", "quiet",
 		"-print_format", "json",

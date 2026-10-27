@@ -78,7 +78,7 @@ func ParseAtomicParsley(ctx context.Context, filePath string) (*ParsedTags, erro
 		return nil, fmt.Errorf("%s: %w", atomicParsleyBinary, err)
 	}
 
-	//nolint:gosec // binary resolved by LookFor
+	// #nosec G204 -- binary resolved by LookFor
 	cmd := exec.CommandContext(ctx, atomicParsley, filePath, "-t")
 
 	var stdout, stderr bytes.Buffer
@@ -174,7 +174,7 @@ func ParseMetaflac(ctx context.Context, filePath string) (*ParsedTags, error) {
 		return nil, fmt.Errorf("%s: %w", metaflacBinary, err)
 	}
 
-	//nolint:gosec // binary resolved by LookFor
+	// #nosec G204 -- binary resolved by LookFor
 	cmd := exec.CommandContext(ctx, metaflac, "--export-tags-to=-", filePath)
 
 	var stdout, stderr bytes.Buffer
@@ -246,7 +246,7 @@ func countMetaflacPictures(ctx context.Context, filePath string) int {
 		return 0
 	}
 
-	//nolint:gosec // binary resolved by LookFor
+	// #nosec G204 -- binary resolved by LookFor
 	cmd := exec.CommandContext(ctx, metaflac, "--list", "--block-type=PICTURE", filePath)
 
 	output, err := cmd.Output()
