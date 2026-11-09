@@ -1,5 +1,5 @@
-github.com/containerd/nerdctl/mod/tigron v0.0.0-20260212081135-61a62f37ccbf h1:fs2wE/ms3LLU/EoAtFcKy/VXedQhxwAKm7v3xY/TWow=
-github.com/containerd/nerdctl/mod/tigron v0.0.0-20260212081135-61a62f37ccbf/go.mod h1:gmUZh2wUVxr/msGogKUi6v9eJbP5ASO4fVYEPzHH4iI=
+github.com/containerd/nerdctl/mod/tigron v0.0.0-20261106081034-27dac9462451 h1:POlQq6Qo9WgYsexmMJYHLlZzwOA/1N6+tx4b65Dh4p8=
+github.com/containerd/nerdctl/mod/tigron v0.0.0-20261106081034-27dac9462451/go.mod h1:gmUZh2wUVxr/msGogKUi6v9eJbP5ASO4fVYEPzHH4iI=
 github.com/creack/pty v1.1.24 h1:bJrF4RRfyJnbTJqzRLHzcGaZK1NeM5kTC9jGgovnR1s=
 github.com/creack/pty v1.1.24/go.mod h1:08sCNb52WyoAwi2QDyzUCTgcvVFhUzewun7wtTfvcwE=
 github.com/forkcloser/xos v0.1.0 h1:0vfH2xxdCCDv6x7mYvnQ74zTElzb3wce+0wL+782HtE=
