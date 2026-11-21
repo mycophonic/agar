@@ -3,7 +3,7 @@ module github.com/mycophonic/agar
 go 1.26.0
 
 require (
-	github.com/containerd/nerdctl/mod/tigron v0.0.0-20261106081034-27dac9462451
+	github.com/containerd/nerdctl/mod/tigron v0.0.0-20261118011822-52b705e52dc8
 	github.com/mycophonic/primordium v0.15.1
 )
 
